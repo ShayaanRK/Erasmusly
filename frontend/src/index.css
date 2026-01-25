@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@import "tailwindcss";
+@config "../tailwind.config.js";
+
+@layer base {
+   body {
+      @apply bg-slate-50 text-slate-900 font-sans antialiased;
+   }
+}
+
+.card-hover {
+   @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+}
+
+.btn-primary {
+   @apply px-4 py-2 bg-gradient-to-r from-primary-500 to-secondary-500 text-white rounded-lg font-medium hover:opacity-90 transition-opacity;
+}
+
+.input-field {
+   @apply w-full px-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all;
+}
+
+@layer components {
+
+   /* Glassmorphism effect */
+   .glass-card {
+      @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-xl;
+   }
+
+   /* Animated gradient text for that 'premium' feel */
+   .text-gradient {
+      @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-500 via-secondary-500 to-primary-600;
+   }
+
+   /* Bento grid item scaling */
+   .bento-item {
+      @apply transition-all duration-500 hover:scale-[1.02] active:scale-[0.98];
+   }
+}
