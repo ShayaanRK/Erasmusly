@@ -40,13 +40,32 @@ export default function Profile() {
    });
 
    useEffect(() => {
-      fetchProfile();
+      // Check if we already have the extended profile data in AuthContext (simple caching)
+      if (authUser?.university || authUser?.bio || authUser?.interests) {
+         setProfile(authUser);
+         setFormData({
+            name: authUser.name || '',
+            university: authUser.university || '',
+            city: authUser.city || '',
+            country: authUser.country || '',
+            budgetRange: authUser.budgetRange || '',
+            interests: Array.isArray(authUser.interests) ? authUser.interests.join(', ') : (authUser.interests || ''),
+            bio: authUser.bio || ''
+         });
+         setLoading(false);
+      } else {
+         fetchProfile();
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
    }, []);
 
    const fetchProfile = async () => {
       try {
          const { data } = await api.get('/users/profile');
          setProfile(data);
+         // Update AuthContext cache
+         updateUser(data);
+
          setFormData({
             name: data.name || '',
             university: data.university || '',

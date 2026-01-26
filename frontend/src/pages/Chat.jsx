@@ -25,6 +25,8 @@ var socket;
 const Chat = () => {
    const { user, loading } = useAuth();
    const [chats, setChats] = useState([]);
+   const [filteredChats, setFilteredChats] = useState([]);
+   const [searchTerm, setSearchTerm] = useState('');
    const [selectedChat, setSelectedChat] = useState(null);
    const [messages, setMessages] = useState([]);
    const [newMessage, setNewMessage] = useState('');
@@ -34,7 +36,7 @@ const Chat = () => {
    useEffect(() => {
       socket = io(ENDPOINT);
       socket.emit('setup', user);
-      socket.on('connected', () => console.log('Socket Connected'));
+      socket.on('connected', () => { });
       return () => {
          socket.disconnect();
       };
@@ -59,12 +61,26 @@ const Chat = () => {
                if (found) setSelectedChat(found);
             }
          } catch (error) {
-            console.error("Failed to fetch chats:", error);
             toast.error(error.response?.data?.message || 'Failed to load chats');
          }
       }
       getChats();
    }, [user, searchParams]);
+
+   // Debounce search
+   useEffect(() => {
+      const handler = setTimeout(() => {
+         if (!searchTerm) {
+            setFilteredChats(chats);
+         } else {
+            setFilteredChats(chats.filter(c => {
+               const other = getSender(c.participants);
+               return other?.name?.toLowerCase().includes(searchTerm.toLowerCase());
+            }));
+         }
+      }, 300);
+      return () => clearTimeout(handler);
+   }, [searchTerm, chats, user]);
 
    // Fetch messages when chat selected
    useEffect(() => {
@@ -76,7 +92,6 @@ const Chat = () => {
             setMessages(data || []);
             socket.emit('join chat', selectedChat._id);
          } catch (error) {
-            console.error("Failed to fetch messages:", error);
             toast.error(error.response?.data?.message || 'Failed to load messages');
          }
       };
@@ -116,7 +131,6 @@ const Chat = () => {
          setMessages(prev => [...prev, data]);
          setNewMessage('');
       } catch (error) {
-         console.error("Failed to send message:", error);
          toast.error(error.response?.data?.message || 'Failed to send message');
       }
    };
@@ -161,13 +175,15 @@ const Chat = () => {
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                   <input
                      placeholder="Search messages..."
+                     value={searchTerm}
+                     onChange={(e) => setSearchTerm(e.target.value)}
                      className="w-full pl-10 pr-4 py-2 bg-slate-100 border-none rounded-xl text-sm focus:ring-2 focus:ring-primary-600/20 outline-none transition-all"
                   />
                </div>
             </div>
 
             <div className="flex-1 overflow-y-auto min-h-0 px-3 pb-4 space-y-1 custom-scrollbar">
-               {chats.map((chat, index) => {
+               {filteredChats.map((chat, index) => {
                   const other = getSender(chat.participants);
                   const isOnline = index === 0; // Mock online status
                   const isSelected = selectedChat?._id === chat._id;
