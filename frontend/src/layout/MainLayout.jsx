@@ -11,7 +11,7 @@ const MainLayout = () => {
    return (
       <div className={cn(
          "bg-slate-50 relative w-full",
-         isChat ? "h-full overflow-hidden" : "min-h-screen"
+         isChat ? "h-screen overflow-hidden" : "min-h-screen"
       )}>
          {/* PREMIUM BACKGROUND TEXTURE */}
          <div className="fixed inset-0 z-0 pointer-events-none opacity-[0.4]"
@@ -23,7 +23,7 @@ const MainLayout = () => {
 
          <div className={cn(
             "relative z-10 flex flex-col w-full",
-            isChat ? "h-full overflow-hidden" : "min-h-screen"
+            isChat ? "h-screen overflow-hidden" : "min-h-screen"
          )}>
             <Navbar />
             <main className={cn(

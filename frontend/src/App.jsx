@@ -13,22 +13,20 @@ import Profile from './pages/Profile';
 function App() {
    return (
       <AuthProvider>
-         <div className="h-full w-full">
-            <Routes>
-               <Route path="/login" element={<Login />} />
-               <Route path="/register" element={<Register />} />
+         <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
 
-               <Route element={<ProtectedRoute />}>
-                  <Route element={<MainLayout />}>
-                     <Route path="/" element={<Dashboard />} />
-                     <Route path="/housing" element={<Housing />} />
-                     <Route path="/roommates" element={<Roommates />} />
-                     <Route path="/chat" element={<Chat />} />
-                     <Route path="/profile" element={<Profile />} />
-                  </Route>
+            <Route element={<ProtectedRoute />}>
+               <Route element={<MainLayout />}>
+                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/housing" element={<Housing />} />
+                  <Route path="/roommates" element={<Roommates />} />
+                  <Route path="/chat" element={<Chat />} />
+                  <Route path="/profile" element={<Profile />} />
                </Route>
-            </Routes>
-         </div>
+            </Route>
+         </Routes>
       </AuthProvider>
    );
 }
