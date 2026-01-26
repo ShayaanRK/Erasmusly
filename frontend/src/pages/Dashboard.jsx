@@ -30,10 +30,10 @@ const Dashboard = () => {
          {/* --- GRAND HERO SECTION --- */}
          <section className="relative w-full h-[550px] md:h-[650px] flex items-center justify-center overflow-hidden">
             {/* Animated Background */}
-            <div className="absolute inset-0 z-0">
+            <div className="absolute inset-0 z-0 bg-slate-950">
                <img
-                  src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&q=80&w=2070"
-                  className="w-full h-full object-cover scale-105 animate-slow-zoom"
+                  src="https://www.cems.org/sites/default/files/styles/ct_school_profile_main_image/public/2020-07/EUR%20Campus%202018%201.jpg?auto=format&fit=crop&q=80&w=2070"
+                  className="w-full h-full object-cover scale-105 animate-slow-zoom opacity-60"
                   alt="University Campus"
                />
                <div className="absolute inset-0 bg-gradient-to-b from-slate-900/80 via-slate-900/40 to-background" />
@@ -47,11 +47,11 @@ const Dashboard = () => {
                >
                   <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-medium mb-8">
                      <Sparkles className="h-4 w-4 text-primary" />
-                     <span>Certified Erasmus Student Portal</span>
+                     <span>Custom Erasmus Student Portal</span>
                   </div>
                   <h1 className="text-6xl md:text-8xl font-black text-white mb-8 tracking-tighter leading-[0.9]">
-                     Hello, <span className="text-primary">{user?.name || 'Explorer'}</span>. <br />
-                     Find your <span className="text-gradient">Community.</span>
+                     Hello, <span className="text-primary">{user?.name || 'Explorer'}</span> <br />
+                     Find your <span className="text-gradient">Community</span>
                   </h1>
                   <p className="text-slate-200 text-xl md:text-2xl max-w-2xl mx-auto leading-relaxed mb-12 opacity-90 font-medium">
                      Seamlessly connect with fellow students{user?.city ? ` in ${user.city}` : ''},
@@ -75,7 +75,7 @@ const Dashboard = () => {
                <div>
                   <div className="flex items-center gap-3 mb-2">
                      <div className="h-1 w-12 bg-primary rounded-full" />
-                     <span className="text-primary font-bold uppercase tracking-widest text-xs">Official Dashboard</span>
+                     <span className="text-primary font-bold uppercase tracking-widest text-xs">Erasmusly Dashboard</span>
                   </div>
                   <h2 className="text-4xl font-black tracking-tight text-slate-900">Your Student Portal</h2>
                   <p className="text-slate-500 text-lg font-medium">Manage your housing, matches, and messages in one place.</p>

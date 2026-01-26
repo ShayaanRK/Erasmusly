@@ -28,12 +28,18 @@ const Housing = () => {
    const handleCreate = async (e) => {
       e.preventDefault();
       try {
-         await api.post('/housing', formData);
+         // Default image for new posts if none provided
+         const submissionData = {
+            ...formData,
+            images: ['https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=1000']
+         };
+         await api.post('/housing', submissionData);
          setShowCreate(false);
          setFormData({ title: '', description: '', price: '', city: '', address: '' });
          fetchPosts();
       } catch (error) {
-         alert('Failed to creates post');
+         console.error("Creation error:", error.response?.data || error.message);
+         alert('Failed to create post: ' + (error.response?.data?.message || error.message));
       }
    }
 
@@ -82,8 +88,11 @@ const Housing = () => {
                   className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-shadow"
                >
                   <div className="h-48 bg-slate-200">
-                     {/* Placeholder image logic */}
-                     <img src={`https://source.unsplash.com/random/400x300/?apartment,${post.city}`} alt={post.title} className="w-full h-full object-cover" />
+                     <img
+                        src={(post.images && post.images.length > 0) ? post.images[0] : "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=1000"}
+                        alt={post.title}
+                        className="w-full h-full object-cover"
+                     />
                   </div>
                   <div className="p-4">
                      <div className="flex justify-between items-start mb-2">

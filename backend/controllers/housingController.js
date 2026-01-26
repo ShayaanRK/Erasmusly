@@ -6,6 +6,10 @@ const db = require('../config/db');
 const createPost = async (req, res) => {
    const { title, description, price, city, address, images } = req.body;
 
+   if (!title || !price || !city) {
+      return res.status(400).json({ message: 'Please provide title, price, and city' });
+   }
+
    try {
       const result = await db.query(
          `INSERT INTO housing_posts (title, description, price, city, address, images, user_id) 
@@ -13,11 +17,21 @@ const createPost = async (req, res) => {
          [title, description, parseFloat(price), city, address, images || [], req.user.id]
       );
 
-      const createdPost = result.rows[0];
-      res.status(201).json({ ...createdPost, _id: createdPost.id });
+      const post = result.rows[0];
+
+      // Return formatted post
+      res.status(201).json({
+         ...post,
+         _id: post.id,
+         createdBy: {
+            _id: req.user.id,
+            name: req.user.name,
+            email: req.user.email
+         }
+      });
    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Server error' });
+      console.error("Post creation error:", error);
+      res.status(500).json({ message: 'Failed to create housing post: ' + error.message });
    }
 };
 

@@ -37,6 +37,7 @@ const registerUser = async (req, res) => {
          name: user.name,
          email: user.email,
          city: user.city,
+         profilePicture: user.profile_picture,
          token: generateToken(user.id),
       });
    } catch (error) {
@@ -144,6 +145,7 @@ const updateUserProfile = async (req, res) => {
             name: updatedUser.name,
             email: updatedUser.email,
             city: updatedUser.city,
+            profilePicture: updatedUser.profile_picture,
             token: generateToken(updatedUser.id),
          });
       } else {
@@ -188,7 +190,13 @@ const getMatches = async (req, res) => {
             score += shared.length;
          }
 
-         return { ...user, _id: user.id, score };
+         return {
+            ...user,
+            _id: user.id,
+            profilePicture: user.profile_picture,
+            budgetRange: user.budget_range,
+            score
+         };
       });
 
       scoredUsers.sort((a, b) => b.score - a.score);

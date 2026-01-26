@@ -109,7 +109,11 @@ const fetchChatDetails = async (chatRoomId) => {
 
    return {
       _id: chatRoomId,
-      participants: participantsResult.rows.map(p => ({ ...p, _id: p.id })),
+      participants: participantsResult.rows.map(p => ({
+         ...p,
+         _id: p.id,
+         profilePicture: p.profile_picture
+      })),
       messages: messagesResult.rows.map(m => ({
          _id: m.id,
          text: m.text,

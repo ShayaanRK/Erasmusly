@@ -30,8 +30,8 @@ const generateUsers = async () => {
          profile_picture: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=334&q=80',
       },
       {
-         name: 'Lucas Silva',
-         email: 'lucas@example.com',
+         name: 'Ruben Silva',
+         email: 'ruben@example.com',
          password,
          university: 'University of Lisbon',
          city: 'Lisbon',
@@ -99,7 +99,7 @@ const housingPosts = [
       price: 650,
       city: 'Berlin',
       address: 'Torstrasse 12, Berlin',
-      images: ['https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1000&q=80'],
+      images: ['https://www.maritim.com/fileadmin/_processed_/0/1/csm_Bpa_363_Superior_500a005b62.jpg?auto=format&fit=crop&w=1000&q=80'],
    },
    {
       title: 'Sunny Studio in Alfama',
@@ -107,7 +107,7 @@ const housingPosts = [
       price: 800,
       city: 'Lisbon',
       address: 'Rua dos Remédios 45, Lisbon',
-      images: ['https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1000&q=80'],
+      images: ['https://www.maritim.com/fileadmin/_processed_/0/1/csm_Bpa_363_Superior_500a005b62.jpg?auto=format&fit=crop&w=1000&q=80'],
    },
    {
       title: 'Chic Apartment near Eiffel Tower',
@@ -115,7 +115,7 @@ const housingPosts = [
       price: 1200,
       city: 'Paris',
       address: 'Rue Saint-Dominique, Paris',
-      images: ['https://images.unsplash.com/photo-1502005229766-939cb93c598b?auto=format&fit=crop&w=1000&q=80'],
+      images: ['https://www.maritim.com/fileadmin/_processed_/0/1/csm_Bpa_363_Superior_500a005b62.jpg?auto=format&fit=crop&w=1000&q=80'],
    },
    {
       title: 'Historic Room in Trastevere',
@@ -123,7 +123,7 @@ const housingPosts = [
       price: 700,
       city: 'Rome',
       address: 'Via della Lungaretta, Rome',
-      images: ['https://images.unsplash.com/photo-1516455590571-18256e5bb9ff?auto=format&fit=crop&w=1000&q=80'],
+      images: ['https://www.maritim.com/fileadmin/_processed_/0/1/csm_Bpa_363_Superior_500a005b62.jpg?auto=format&fit=crop&w=1000&q=80'],
    },
    {
       title: 'Modern Flat in Downtown',
@@ -131,7 +131,7 @@ const housingPosts = [
       price: 550,
       city: 'Warsaw',
       address: 'Złota 44, Warsaw',
-      images: ['https://images.unsplash.com/photo-1536376072261-38c75010e6c9?auto=format&fit=crop&w=1000&q=80'],
+      images: ['https://www.maritim.com/fileadmin/_processed_/0/1/csm_Bpa_363_Superior_500a005b62.jpg?auto=format&fit=crop&w=1000&q=80'],
    },
 ];
 
