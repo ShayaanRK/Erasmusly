@@ -9,24 +9,28 @@ import Housing from './pages/Housing';
 import Roommates from './pages/Roommates';
 import Chat from './pages/Chat';
 import Profile from './pages/Profile';
+import Events from './pages/Events';
 
 function App() {
    return (
       <AuthProvider>
-         <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+         <div className="h-full w-full">
+            <Routes>
+               <Route path="/login" element={<Login />} />
+               <Route path="/register" element={<Register />} />
 
-            <Route element={<ProtectedRoute />}>
-               <Route element={<MainLayout />}>
-                  <Route path="/" element={<Dashboard />} />
-                  <Route path="/housing" element={<Housing />} />
-                  <Route path="/roommates" element={<Roommates />} />
-                  <Route path="/chat" element={<Chat />} />
-                  <Route path="/profile" element={<Profile />} />
+               <Route element={<ProtectedRoute />}>
+                  <Route element={<MainLayout />}>
+                     <Route path="/" element={<Dashboard />} />
+                     <Route path="/housing" element={<Housing />} />
+                     <Route path="/roommates" element={<Roommates />} />
+                     <Route path="/chat" element={<Chat />} />
+                     <Route path="/profile" element={<Profile />} />
+                     <Route path="/events" element={<Events />} />
+                  </Route>
                </Route>
-            </Route>
-         </Routes>
+            </Routes>
+         </div>
       </AuthProvider>
    );
 }

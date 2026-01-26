@@ -58,12 +58,16 @@ const Dashboard = () => {
                      secure verified housing, and discover local adventures.
                   </p>
                   <div className="flex flex-col sm:flex-row gap-5 justify-center">
-                     <Button size="lg" className="h-16 px-10 text-xl font-black rounded-2xl shadow-2xl shadow-primary/40 group">
-                        Find Roommates <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
-                     </Button>
-                     <Button size="lg" variant="outline" className="h-16 px-10 text-xl font-black rounded-2xl bg-white/5 backdrop-blur-md border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all">
-                        Events List
-                     </Button>
+                     <Link to="/roommates">
+                        <Button size="lg" className="h-16 px-10 text-xl font-black rounded-2xl shadow-2xl shadow-primary/40 group">
+                           Find Roommates <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
+                        </Button>
+                     </Link>
+                     <Link to="/events">
+                        <Button size="lg" variant="outline" className="h-16 px-10 text-xl font-black rounded-2xl bg-white/5 backdrop-blur-md border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all">
+                           Events
+                        </Button>
+                     </Link>
                   </div>
                </motion.div>
             </div>
@@ -173,7 +177,7 @@ const Dashboard = () => {
                      </motion.div>
                   </Link>
 
-                  <Link to="/profile" className="group h-full">
+                  <Link to="/events" className="group h-full">
                      <motion.div variants={item} className="h-full">
                         <Card className="h-full border-none shadow-2xl bento-item glass-card hover:bg-white transition-all duration-300 rounded-[2rem] p-6 flex flex-col justify-between group-hover:scale-105">
                            <div className="w-14 h-14 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center shadow-inner group-hover:bg-purple-600 group-hover:text-white transition-colors duration-500">
@@ -181,7 +185,7 @@ const Dashboard = () => {
                            </div>
                            <div>
                               <CardTitle className="text-xl font-black tracking-tighter mb-1">Events</CardTitle>
-                              <CardDescription className="text-xs font-bold uppercase opacity-60">Coming Soon</CardDescription>
+                              <CardDescription className="text-xs font-bold uppercase opacity-60">Join Your Peers</CardDescription>
                            </div>
                         </Card>
                      </motion.div>

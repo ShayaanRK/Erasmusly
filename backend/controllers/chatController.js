@@ -69,21 +69,68 @@ const fetchChats = async (req, res) => {
 // @route   POST /api/chat/message
 // @access  Private
 const sendMessage = async (req, res) => {
-   const { chatId, content } = req.body;
+   const { chatId, text } = req.body;
 
-   if (!content || !chatId) {
-      return res.sendStatus(400);
+   if (!text || !chatId) {
+      return res.status(400).json({ message: 'ChatId and text are required' });
    }
 
    try {
-      await db.query('INSERT INTO messages (chat_room_id, user_id, text) VALUES ($1, $2, $3)',
-         [chatId, req.user.id, content]);
+      const result = await db.query(
+         'INSERT INTO messages (chat_room_id, user_id, text) VALUES ($1, $2, $3) RETURNING *',
+         [chatId, req.user.id, text]
+      );
+
+      const message = result.rows[0];
 
       // Update chat room timestamp
       await db.query('UPDATE chat_rooms SET updated_at = NOW() WHERE id = $1', [chatId]);
 
-      const chatData = await fetchChatDetails(chatId);
-      res.json(chatData);
+      // Return full message with sender info
+      res.json({
+         _id: message.id,
+         text: message.text,
+         timestamp: message.created_at,
+         chat: chatId,
+         sender: {
+            _id: req.user.id,
+            name: req.user.name,
+            profilePicture: req.user.profile_picture
+         }
+      });
+   } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+   }
+};
+
+// @desc    Get messages for a chat
+// @route   GET /api/message/:chatId
+// @access  Private
+const getMessages = async (req, res) => {
+   const { chatId } = req.params;
+
+   try {
+      const messagesResult = await db.query(`
+         SELECT m.id, m.text, m.created_at as timestamp, u.id as sender_id, u.name as sender_name, u.profile_picture as sender_pic
+         FROM messages m
+         JOIN users u ON m.user_id = u.id
+         WHERE m.chat_room_id = $1
+         ORDER BY m.created_at ASC
+      `, [chatId]);
+
+      const messages = messagesResult.rows.map(m => ({
+         _id: m.id,
+         text: m.text,
+         timestamp: m.timestamp,
+         sender: {
+            _id: m.sender_id,
+            name: m.sender_name,
+            profilePicture: m.sender_pic
+         }
+      }));
+
+      res.status(200).json(messages);
    } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Server error' });
@@ -127,4 +174,4 @@ const fetchChatDetails = async (chatRoomId) => {
    };
 };
 
-module.exports = { accessChat, fetchChats, sendMessage };
+module.exports = { accessChat, fetchChats, sendMessage, getMessages };
