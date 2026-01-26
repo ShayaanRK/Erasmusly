@@ -4,6 +4,7 @@ import { LogOut, Home, MessageSquare, Heart, User, MapPin, Globe, Calendar } fro
 import { Button } from '@/components/ui/button';
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
+import { Separator } from '@radix-ui/react-separator';
 
 const Navbar = () => {
    const { user, logout } = useAuth();
@@ -15,49 +16,53 @@ const Navbar = () => {
    const isActive = (path) => location.pathname === path;
 
    return (
-      <header className="sticky top-0 z-50 w-full border-b border-white/20 bg-white/70 backdrop-blur-xl px-4 sm:px-6 lg:px-8">
-         <div className="max-w-7xl mx-auto flex h-20 items-center justify-between">
-            <div className="flex items-center gap-3 group cursor-pointer" onClick={() => navigate('/')}>
-               <div className="bg-gradient-to-tr from-primary to-indigo-500 rounded-xl p-2 shadow-xl shadow-primary/20 group-hover:rotate-12 transition-transform">
-                  <Globe className="text-white h-7 w-7" />
-               </div>
-               <span className="text-3xl font-black tracking-tighter bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
-                  Erasmusly
-               </span>
+      <header className="sticky top-6 z-50 w-full max-w-7xl mx-auto flex h-20 items-center justify-between px-6 premium-glass rounded-[2rem] mt-6 transition-all duration-500 hover:shadow-primary/5">
+         <div className="flex items-center gap-3.5 group cursor-pointer" onClick={() => navigate('/')}>
+            <div className="vibrant-gradient rounded-2xl p-2.5 shadow-2xl shadow-primary/30 group-hover:rotate-[15deg] transition-all duration-500">
+               <Globe className="text-white h-6 w-6" />
             </div>
-
-            <div className="hidden md:block">
-               <NavigationMenu>
-                  <NavigationMenuList className="gap-2">
-                     <NavItem to="/" icon={<Home className="h-4 w-4" />} label="Home" active={isActive('/')} />
-                     <NavItem to="/housing" icon={<MapPin className="h-4 w-4" />} label="Housing" active={isActive('/housing')} />
-                     <NavItem to="/roommates" icon={<Heart className="h-4 w-4" />} label="Matches" active={isActive('/roommates')} />
-                     <NavItem to="/events" icon={<Calendar className="h-4 w-4" />} label="Events" active={isActive('/events')} />
-                     <NavItem to="/chat" icon={<MessageSquare className="h-4 w-4" />} label="Chat" active={isActive('/chat')} />
-                     <NavItem to="/profile" icon={<User className="h-4 w-4" />} label="Profile" active={isActive('/profile')} />
-                  </NavigationMenuList>
-               </NavigationMenu>
-            </div>
-
-            <div className="flex items-center gap-4">
-               <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-slate-100/50 backdrop-blur-sm rounded-full border border-slate-200">
-                  <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                  <span className="text-xs font-semibold text-slate-600 uppercase tracking-wider">{user.city || 'Global'}</span>
-               </div>
-               <Button variant="ghost" size="icon" onClick={() => { logout(); navigate('/login'); }} className="rounded-full hover:bg-red-50 hover:text-red-600">
-                  <LogOut className="h-5 w-5" />
-               </Button>
-            </div>
+            <span className="text-2xl font-black tracking-tight text-vibrant">
+               Erasmusly
+            </span>
          </div>
 
-         {/* Mobile Bottom Navigation */}
-         <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md border-t border-slate-200 px-6 py-3 flex justify-between items-center z-50">
-            <MobileNavItem to="/" icon={<Home className="h-6 w-6" />} active={isActive('/')} />
-            <MobileNavItem to="/housing" icon={<MapPin className="h-6 w-6" />} active={isActive('/housing')} />
-            <MobileNavItem to="/roommates" icon={<Heart className="h-6 w-6" />} active={isActive('/roommates')} />
-            <MobileNavItem to="/events" icon={<Calendar className="h-6 w-6" />} active={isActive('/events')} />
-            <MobileNavItem to="/chat" icon={<MessageSquare className="h-6 w-6" />} active={isActive('/chat')} />
-            <MobileNavItem to="/profile" icon={<User className="h-6 w-6" />} active={isActive('/profile')} />
+         <div className="hidden lg:block">
+            <NavigationMenu>
+               <NavigationMenuList className="gap-1">
+                  <NavItem to="/" icon={<Home className="size-4" />} label="Home" active={isActive('/')} />
+                  <NavItem to="/housing" icon={<MapPin className="size-4" />} label="Housing" active={isActive('/housing')} />
+                  <NavItem to="/roommates" icon={<Heart className="size-4" />} label="Matches" active={isActive('/roommates')} />
+                  <NavItem to="/events" icon={<Calendar className="size-4" />} label="Events" active={isActive('/events')} />
+                  <NavItem to="/chat" icon={<MessageSquare className="size-4" />} label="Chat" active={isActive('/chat')} />
+                  <NavItem to="/profile" icon={<User className="size-4" />} label="Profile" active={isActive('/profile')} />
+               </NavigationMenuList>
+            </NavigationMenu>
+         </div>
+
+         <div className="flex items-center gap-3">
+            <div className="hidden sm:flex items-center gap-2.5 px-4 py-2 bg-slate-500/5 backdrop-blur-md rounded-2xl border border-white/40">
+               <div className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_oklch(0.6_0.2_150)]" />
+               <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.1em]">{user.city || 'Global'}</span>
+            </div>
+            <Separator orientation="vertical" className="h-6 mx-1 opacity-20 hidden md:block" />
+            <Button
+               variant="ghost"
+               size="icon"
+               onClick={() => { logout(); navigate('/login'); }}
+               className="rounded-2xl transition-all duration-300 hover:bg-destructive/10 hover:text-destructive group"
+            >
+               <LogOut className="h-5 w-5 transition-transform group-hover:translate-x-0.5" />
+            </Button>
+         </div>
+
+         {/* Mobile Navigation - Compact & Modern */}
+         <nav className="lg:hidden fixed bottom-6 left-6 right-6 premium-glass h-16 rounded-[1.5rem] px-6 flex justify-between items-center z-50 border-t-0">
+            <MobileNavItem to="/" icon={<Home className="size-5" />} active={isActive('/')} />
+            <MobileNavItem to="/housing" icon={<MapPin className="size-5" />} active={isActive('/housing')} />
+            <MobileNavItem to="/roommates" icon={<Heart className="size-5" />} active={isActive('/roommates')} />
+            <MobileNavItem to="/events" icon={<Calendar className="size-5" />} active={isActive('/events')} />
+            <MobileNavItem to="/chat" icon={<MessageSquare className="size-5" />} active={isActive('/chat')} />
+            <MobileNavItem to="/profile" icon={<User className="size-5" />} active={isActive('/profile')} />
          </nav>
       </header>
    );

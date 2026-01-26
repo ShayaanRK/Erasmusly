@@ -75,19 +75,19 @@ const Dashboard = () => {
 
          {/* --- DASHBOARD CONTENT --- */}
          <div className="max-w-7xl mx-auto px-6">
-            <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-               <div>
-                  <div className="flex items-center gap-3 mb-2">
-                     <div className="h-1 w-12 bg-primary rounded-full" />
-                     <span className="text-primary font-bold uppercase tracking-widest text-xs">Erasmusly Dashboard</span>
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
+               <div className="space-y-4">
+                  <div className="flex items-center gap-4">
+                     <div className="h-1.5 w-16 bg-primary rounded-full shadow-[0_0_12px_var(--primary)]" />
+                     <span className="text-primary font-black uppercase tracking-[0.2em] text-[10px]">Your Command Center</span>
                   </div>
-                  <h2 className="text-4xl font-black tracking-tight text-slate-900">Your Student Portal</h2>
-                  <p className="text-slate-500 text-lg font-medium">Manage your housing, matches, and messages in one place.</p>
+                  <h2 className="text-5xl font-black tracking-tight text-slate-900 font-display">Your Student Portal</h2>
+                  <p className="text-slate-500 text-xl font-medium max-w-2xl leading-relaxed">Everything you need to navigate your Erasmus life, from housing to matching.</p>
                </div>
 
-               <div className="flex items-center gap-1.5 text-green-700 bg-green-50 px-4 py-2 rounded-2xl border border-green-100 font-bold text-sm shadow-sm group hover:scale-105 transition-transform cursor-default">
-                  <ShieldCheck className="h-5 w-5" />
-                  <span>Profile Verified</span>
+               <div className="flex items-center gap-2 text-green-700 bg-green-500/10 px-5 py-2.5 rounded-2xl border border-green-200/50 font-black text-xs uppercase tracking-widest shadow-sm backdrop-blur-sm group hover:scale-105 transition-all cursor-default">
+                  <ShieldCheck className="size-4" />
+                  <span>Secure Account</span>
                </div>
             </div>
 
@@ -96,41 +96,36 @@ const Dashboard = () => {
                variants={container}
                initial="hidden"
                animate="show"
-               className="grid grid-cols-1 md:grid-cols-12 md:grid-rows-2 gap-8"
+               className="grid grid-cols-1 md:grid-cols-12 md:grid-rows-2 gap-10"
             >
                {/* LARGE CARD: Housing (Featured) */}
                <Link to="/housing" className="md:col-span-8 md:row-span-2 group">
                   <motion.div variants={item} className="h-full">
-                     <Card className="h-full overflow-hidden border-none shadow-2xl bento-item group-hover:shadow-primary/20 transition-all duration-500 rounded-[2.5rem]">
-                        <div className="relative h-2/3 md:h-[60%] overflow-hidden">
+                     <Card className="h-full overflow-hidden border-none shadow-premium hover:shadow-vibrant bento-item transition-all duration-700 rounded-[3rem] bg-white">
+                        <div className="relative h-[65%] overflow-hidden">
                            <img
                               src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=1000"
-                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2s]"
                               alt="Housing"
                            />
-                           <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent" />
-                           <div className="absolute top-6 left-6">
-                              <div className="bg-white/95 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2 shadow-lg border border-white/20">
-                                 <TrendingUp className="h-3.5 w-3.5" />
-                                 <span>High Demand in {user?.city || 'Europe'}</span>
+                           <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-80" />
+                           <div className="absolute top-8 left-8">
+                              <div className="bg-white/95 backdrop-blur-md px-5 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 shadow-xl border border-white/40">
+                                 <TrendingUp className="size-3.5" />
+                                 <span>Curated Spaces</span>
                               </div>
                            </div>
                         </div>
-                        <div className="p-8 space-y-4">
-                           <div className="flex items-center gap-3">
-                              <div className="p-3 bg-primary/10 rounded-2xl">
-                                 <Home className="text-primary h-8 w-8" />
+                        <div className="p-10 space-y-5">
+                           <div className="flex items-center gap-4">
+                              <div className="p-3.5 bg-primary/10 rounded-[1.25rem]">
+                                 <Home className="text-primary size-8" />
                               </div>
-                              <CardTitle className="text-4xl font-black text-slate-900 tracking-tighter">Verified Housing</CardTitle>
+                              <CardTitle className="text-4xl font-black text-slate-900 tracking-tighter font-display uppercase">Verified Housing</CardTitle>
                            </div>
-                           <CardDescription className="text-lg font-medium text-slate-500 max-w-xl">
-                              Discover premium student apartments in {user?.city || 'your destination'} curated for the international community.
+                           <CardDescription className="text-xl font-medium text-slate-600 leading-[1.6]">
+                              Find a safe, verified home for your semester. We've vetted every listing for your peace of mind.
                            </CardDescription>
-                           <div className="pt-4">
-                              <span className="text-primary font-black text-lg inline-flex items-center group-hover:gap-4 transition-all gap-2">
-                                 Browse 150+ Listings <ArrowRight className="h-5 w-5" />
-                              </span>
-                           </div>
                         </div>
                      </Card>
                   </motion.div>
@@ -139,39 +134,39 @@ const Dashboard = () => {
                {/* MEDIUM CARD: Roommates */}
                <Link to="/roommates" className="md:col-span-4 group">
                   <motion.div variants={item} className="h-full">
-                     <Card className="h-full border-none shadow-2xl bg-gradient-to-br from-primary to-secondary text-white bento-item overflow-hidden relative group-hover:shadow-secondary/30 rounded-[2.5rem]">
-                        <div className="absolute -right-12 -bottom-12 opacity-10 group-hover:opacity-30 transition-all duration-700">
-                           <Users size={240} />
+                     <Card className="h-full border-none shadow-premium bg-gradient-to-br from-primary via-primary to-brand-700 text-white bento-item overflow-hidden relative rounded-[3rem]">
+                        <div className="absolute -right-16 -bottom-16 opacity-10 group-hover:opacity-20 transition-all duration-700 rotate-[15deg]">
+                           <Users size={280} />
                         </div>
-                        <div className="p-8 h-full flex flex-col justify-between relative z-10">
-                           <div className="space-y-4">
-                              <div className="p-3 bg-white/10 w-fit rounded-2xl backdrop-blur-md border border-white/10">
-                                 <Users className="h-8 w-8" />
+                        <div className="p-10 h-full flex flex-col justify-between relative z-10">
+                           <div className="space-y-5">
+                              <div className="p-4 bg-white/10 w-fit rounded-2xl backdrop-blur-xl border border-white/20">
+                                 <Users className="size-8" />
                               </div>
-                              <CardTitle className="text-3xl font-black tracking-tighter">Perfect Roommates</CardTitle>
-                              <CardDescription className="text-white/80 text-lg font-medium">
-                                 Our matching engine pairs you by interests and lifestyle.
+                              <CardTitle className="text-4xl font-black tracking-tighter font-display uppercase">Matches</CardTitle>
+                              <CardDescription className="text-white/80 text-lg font-medium leading-relaxed">
+                                 Connect with your future best friends. Match by university, interests, and vibes.
                               </CardDescription>
                            </div>
-                           <Button variant="secondary" className="w-full bg-white text-primary font-black text-lg rounded-2xl shadow-xl border-none hover:bg-slate-50 py-7">
-                              Find Matches
+                           <Button variant="secondary" className="w-full h-16 bg-white text-primary font-black text-xs uppercase tracking-[0.2em] rounded-2xl shadow-2xl border-none hover:bg-slate-50 transition-all">
+                              Start Matching
                            </Button>
                         </div>
                      </Card>
                   </motion.div>
                </Link>
 
-               {/* SMALL CARD: Messages / Events Combined Style */}
-               <div className="md:col-span-4 grid grid-cols-2 gap-4">
+               {/* SMALL CARDS: Messages / Events Combined Style */}
+               <div className="md:col-span-4 grid grid-cols-2 gap-6">
                   <Link to="/chat" className="group h-full">
                      <motion.div variants={item} className="h-full">
-                        <Card className="h-full border-none shadow-2xl bento-item glass-card hover:bg-white transition-all duration-300 rounded-[2rem] p-6 flex flex-col justify-between group-hover:scale-105">
-                           <div className="w-14 h-14 bg-green-100 text-green-600 rounded-2xl flex items-center justify-center shadow-inner group-hover:bg-green-600 group-hover:text-white transition-colors duration-500">
-                              <MessageSquare size={28} />
+                        <Card className="h-full border-none shadow-premium bento-item bg-white/40 backdrop-blur-xl hover:bg-white transition-all duration-500 rounded-[2.5rem] p-8 flex flex-col justify-between">
+                           <div className="size-16 bg-green-500/10 text-green-600 rounded-2xl flex items-center justify-center shadow-inner group-hover:bg-green-500 group-hover:text-white transition-all duration-500">
+                              <MessageSquare size={32} />
                            </div>
-                           <div>
-                              <CardTitle className="text-xl font-black tracking-tighter mb-1">Messages</CardTitle>
-                              <CardDescription className="text-xs font-bold uppercase opacity-60">2 New Alerts</CardDescription>
+                           <div className="space-y-1">
+                              <CardTitle className="text-2xl font-black tracking-tighter font-display uppercase">Inbox</CardTitle>
+                              <CardDescription className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Connect Now</CardDescription>
                            </div>
                         </Card>
                      </motion.div>
@@ -179,13 +174,13 @@ const Dashboard = () => {
 
                   <Link to="/events" className="group h-full">
                      <motion.div variants={item} className="h-full">
-                        <Card className="h-full border-none shadow-2xl bento-item glass-card hover:bg-white transition-all duration-300 rounded-[2rem] p-6 flex flex-col justify-between group-hover:scale-105">
-                           <div className="w-14 h-14 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center shadow-inner group-hover:bg-purple-600 group-hover:text-white transition-colors duration-500">
-                              <Calendar size={28} />
+                        <Card className="h-full border-none shadow-premium bento-item bg-white/40 backdrop-blur-xl hover:bg-white transition-all duration-500 rounded-[2.5rem] p-8 flex flex-col justify-between">
+                           <div className="size-16 bg-brand-500/10 text-primary rounded-2xl flex items-center justify-center shadow-inner group-hover:bg-primary group-hover:text-white transition-all duration-500">
+                              <Calendar size={32} />
                            </div>
-                           <div>
-                              <CardTitle className="text-xl font-black tracking-tighter mb-1">Events</CardTitle>
-                              <CardDescription className="text-xs font-bold uppercase opacity-60">Join Your Peers</CardDescription>
+                           <div className="space-y-1">
+                              <CardTitle className="text-2xl font-black tracking-tighter font-display uppercase">Events</CardTitle>
+                              <CardDescription className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Join Local</CardDescription>
                            </div>
                         </Card>
                      </motion.div>
