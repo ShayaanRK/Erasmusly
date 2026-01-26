@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect, useContext } from 'react';
 import api from '../api';
+import toast from 'react-hot-toast';
 
 const AuthContext = createContext();
 
@@ -10,36 +11,62 @@ export const AuthProvider = ({ children }) => {
    const [loading, setLoading] = useState(true);
 
    useEffect(() => {
-      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-      if (userInfo) {
-         setUser(userInfo);
+      try {
+         const userInfo = localStorage.getItem('userInfo');
+         if (userInfo) {
+            const parsed = JSON.parse(userInfo);
+            setUser(parsed);
+         }
+      } catch (error) {
+         console.error('Failed to parse user info:', error);
+         localStorage.removeItem('userInfo');
       }
       setLoading(false);
    }, []);
 
    const login = async (email, password) => {
-      const { data } = await api.post('/users/login', { email, password });
-      localStorage.setItem('userInfo', JSON.stringify(data));
-      setUser(data);
-      return data;
+      try {
+         const { data } = await api.post('/users/login', { email, password });
+         localStorage.setItem('userInfo', JSON.stringify(data));
+         setUser(data);
+         toast.success('Welcome back!');
+         return data;
+      } catch (error) {
+         const message = error.response?.data?.message || error.message || 'Login failed';
+         toast.error(message);
+         throw error;
+      }
    };
 
    const register = async (userData) => {
-      const { data } = await api.post('/users', userData);
-      localStorage.setItem('userInfo', JSON.stringify(data));
-      setUser(data);
-      return data;
+      try {
+         const { data } = await api.post('/users', userData);
+         localStorage.setItem('userInfo', JSON.stringify(data));
+         setUser(data);
+         toast.success('Account created successfully!');
+         return data;
+      } catch (error) {
+         const message = error.response?.data?.message || error.message || 'Registration failed';
+         toast.error(message);
+         throw error;
+      }
    };
 
    const logout = () => {
       localStorage.removeItem('userInfo');
       setUser(null);
+      toast.success('Logged out successfully');
    };
 
    const updateUser = (data) => {
-      const updated = { ...user, ...data };
-      localStorage.setItem('userInfo', JSON.stringify(updated));
-      setUser(updated);
+      try {
+         const updated = { ...user, ...data };
+         localStorage.setItem('userInfo', JSON.stringify(updated));
+         setUser(updated);
+      } catch (error) {
+         console.error('Failed to update user:', error);
+         toast.error('Failed to update user data');
+      }
    }
 
    return (

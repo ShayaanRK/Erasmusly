@@ -6,15 +6,31 @@ const db = require('../config/db');
 const createPost = async (req, res) => {
    const { title, description, price, city, address, images } = req.body;
 
-   if (!title || !price || !city) {
-      return res.status(400).json({ message: 'Please provide title, price, and city' });
-   }
-
    try {
+      // Validate required fields
+      if (!title || !price || !city) {
+         return res.status(400).json({ message: 'Please provide title, price, and city' });
+      }
+
+      if (!req.user || !req.user.id) {
+         return res.status(401).json({ message: 'Not authorized' });
+      }
+
+      // Validate price is a positive number
+      const parsedPrice = parseFloat(price);
+      if (isNaN(parsedPrice) || parsedPrice <= 0) {
+         return res.status(400).json({ message: 'Please provide a valid price greater than 0' });
+      }
+
+      // Validate title length
+      if (title.trim().length <= 3) {
+         return res.status(400).json({ message: 'Title must be at least 3 characters long' });
+      }
+
       const result = await db.query(
          `INSERT INTO housing_posts (title, description, price, city, address, images, user_id) 
           VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-         [title, description, parseFloat(price), city, address, images || [], req.user.id]
+         [title.trim(), description?.trim() || '', parsedPrice, city.trim(), address?.trim() || '', images || [], req.user.id]
       );
 
       const post = result.rows[0];
@@ -31,7 +47,7 @@ const createPost = async (req, res) => {
       });
    } catch (error) {
       console.error("Post creation error:", error);
-      res.status(500).json({ message: 'Failed to create housing post: ' + error.message });
+      res.status(500).json({ message: 'Failed to create housing post. Please try again later.' });
    }
 };
 
@@ -42,6 +58,10 @@ const getPosts = async (req, res) => {
    const { city, minPrice, maxPrice } = req.query;
 
    try {
+      if (!req.user || !req.user.id) {
+         return res.status(401).json({ message: 'Not authorized' });
+      }
+
       let queryText = `
          SELECT hp.*, u.name, u.email, u.profile_picture 
          FROM housing_posts hp
@@ -58,16 +78,24 @@ const getPosts = async (req, res) => {
       }
 
       if (minPrice) {
-         queryText += ` AND hp.price >= $${paramIndex}`;
-         params.push(parseFloat(minPrice));
-         paramIndex++;
+         const parsedMin = parseFloat(minPrice);
+         if (!isNaN(parsedMin) && parsedMin >= 0) {
+            queryText += ` AND hp.price >= $${paramIndex}`;
+            params.push(parsedMin);
+            paramIndex++;
+         }
       }
 
       if (maxPrice) {
-         queryText += ` AND hp.price <= $${paramIndex}`;
-         params.push(parseFloat(maxPrice));
-         paramIndex++;
+         const parsedMax = parseFloat(maxPrice);
+         if (!isNaN(parsedMax) && parsedMax >= 0) {
+            queryText += ` AND hp.price === $${paramIndex}`;
+            params.push(parsedMax);
+            paramIndex++;
+         }
       }
+
+      queryText += ' ORDER BY hp.created_at DESC';
 
       const result = await db.query(queryText, params);
       const posts = result.rows;
@@ -92,8 +120,8 @@ const getPosts = async (req, res) => {
 
       res.json(formattedPosts);
    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Server error' });
+      console.error('Get posts error:', error);
+      res.status(500).json({ message: 'Failed to fetch housing posts. Please try again later.' });
    }
 };
 

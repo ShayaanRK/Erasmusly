@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../api';
+import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
 import { Calendar, MapPin, Clock, User, Plus } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -13,9 +14,10 @@ const Events = () => {
       const fetchEvents = async () => {
          try {
             const { data } = await api.get('/events');
-            setEvents(data);
+            setEvents(data || []);
          } catch (error) {
             console.error("Failed to fetch events", error);
+            toast.error(error.response?.data?.message || 'Failed to load events');
          } finally {
             setLoading(false);
          }

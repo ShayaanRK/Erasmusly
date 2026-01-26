@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import api from '../api';
+import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, MapPin, DollarSign, Home, Building2 } from 'lucide-react';
+import { Plus, MapPin, DollarSign, Home, Building2, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,39 +14,68 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 const Housing = () => {
    const [posts, setPosts] = useState([]);
    const [showCreate, setShowCreate] = useState(false);
+   const [loading, setLoading] = useState(true);
+   const [creating, setCreating] = useState(false);
    const [formData, setFormData] = useState({
       title: '', description: '', price: '', city: '', address: ''
    });
    const { user } = useAuth();
 
    const fetchPosts = async () => {
+      setLoading(true);
       try {
-         const { data } = await api.get(`/housing?city=${user.city}`); // Default to user's city
-         setPosts(data);
+         const { data } = await api.get(`/housing?city=${user?.city || ''}`); // Default to user's city
+         setPosts(data || []);
       } catch (error) {
          console.error("Failed to fetch posts", error);
+         toast.error(error.response?.data?.message || 'Failed to load housing posts');
+      } finally {
+         setLoading(false);
       }
    };
 
    useEffect(() => {
-      fetchPosts();
-   }, [user.city]);
+      if (user?.city) {
+         fetchPosts();
+      }
+   }, [user?.city]);
 
    const handleCreate = async (e) => {
       e.preventDefault();
+
+      // Validate required fields
+      if (!formData.title.trim() || !formData.price || !formData.city.trim() || !formData.description.trim()) {
+         toast.error('Please fill in all required fields');
+         return;
+      }
+
+      // Validate price
+      if (isNaN(formData.price) || parseFloat(formData.price) <= 0) {
+         toast.error('Please enter a valid price');
+         return;
+      }
+
+      setCreating(true);
       try {
          // Default image for new posts if none provided
          const submissionData = {
             ...formData,
+            title: formData.title.trim(),
+            city: formData.city.trim(),
+            description: formData.description.trim(),
+            address: formData.address.trim(),
             images: ['https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=1000']
          };
          await api.post('/housing', submissionData);
+         toast.success('Housing post created successfully!');
          setShowCreate(false);
          setFormData({ title: '', description: '', price: '', city: '', address: '' });
          fetchPosts();
       } catch (error) {
          console.error("Creation error:", error.response?.data || error.message);
-         alert('Failed to create post: ' + (error.response?.data?.message || error.message));
+         toast.error(error.response?.data?.message || 'Failed to create post');
+      } finally {
+         setCreating(false);
       }
    }
 
@@ -106,7 +136,20 @@ const Housing = () => {
                            </div>
                            <div className="flex justify-end gap-4 pt-6">
                               <Button variant="ghost" type="button" onClick={() => setShowCreate(false)} className="rounded-xl px-8 h-14 font-black text-xs uppercase text-slate-400">Cancel</Button>
-                              <Button type="submit" className="rounded-2xl px-12 h-14 font-black text-xs uppercase tracking-widest shadow-vibrant">Publish Listing</Button>
+                              <Button
+                                 type="submit"
+                                 disabled={creating || !formData.title.trim() || !formData.price || !formData.city.trim() || !formData.description.trim()}
+                                 className="rounded-2xl px-12 h-14 font-black text-xs uppercase tracking-widest shadow-vibrant disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                 {creating ? (
+                                    <>
+                                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                       Publishing...
+                                    </>
+                                 ) : (
+                                    'Publish Listing'
+                                 )}
+                              </Button>
                            </div>
                         </form>
                      </CardContent>

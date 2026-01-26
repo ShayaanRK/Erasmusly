@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../api';
+import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { io } from 'socket.io-client';
 import { Send, MessageSquare, ChevronLeft, Phone, Video, Search, MoreVertical } from 'lucide-react';
@@ -50,7 +51,7 @@ const Chat = () => {
       const getChats = async () => {
          try {
             const { data } = await api.get('/chat');
-            setChats(data);
+            setChats(data || []);
 
             const preSelectId = searchParams.get('id');
             if (preSelectId) {
@@ -59,6 +60,7 @@ const Chat = () => {
             }
          } catch (error) {
             console.error("Failed to fetch chats:", error);
+            toast.error(error.response?.data?.message || 'Failed to load chats');
          }
       }
       getChats();
@@ -71,10 +73,11 @@ const Chat = () => {
       const getMessages = async () => {
          try {
             const { data } = await api.get(`/message/${selectedChat._id}`);
-            setMessages(data);
+            setMessages(data || []);
             socket.emit('join chat', selectedChat._id);
          } catch (error) {
             console.error("Failed to fetch messages:", error);
+            toast.error(error.response?.data?.message || 'Failed to load messages');
          }
       };
       getMessages();
@@ -98,18 +101,23 @@ const Chat = () => {
    }, [selectedChat]);
 
    const handleSend = async () => {
-      if (!newMessage.trim()) return;
+      const trimmedMessage = newMessage.trim();
+      if (!trimmedMessage) {
+         toast.error('Please enter a message');
+         return;
+      }
 
       try {
          const { data } = await api.post('/message', {
             chatId: selectedChat._id,
-            text: newMessage
+            text: trimmedMessage
          });
          socket.emit('new message', data);
          setMessages(prev => [...prev, data]);
          setNewMessage('');
       } catch (error) {
          console.error("Failed to send message:", error);
+         toast.error(error.response?.data?.message || 'Failed to send message');
       }
    };
 

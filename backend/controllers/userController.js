@@ -15,10 +15,26 @@ const registerUser = async (req, res) => {
    const { name, email, password, university, city, country, budgetRange, interests, bio } = req.body;
 
    try {
+      // Validate required fields
+      if (!name || !email || !password) {
+         return res.status(400).json({ message: 'Please provide name, email, and password' });
+      }
+
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+         return res.status(400).json({ message: 'Please provide a valid email address' });
+      }
+
+      // Validate password length
+      if (password.length < 6) {
+         return res.status(400).json({ message: 'Password must be at least 6 characters long' });
+      }
+
       const userExists = await db.query('SELECT * FROM users WHERE email = $1', [email]);
 
       if (userExists.rows.length > 0) {
-         return res.status(400).json({ message: 'User already exists' });
+         return res.status(400).json({ message: 'User already exists with this email' });
       }
 
       const salt = await bcrypt.genSalt(10);
@@ -41,8 +57,8 @@ const registerUser = async (req, res) => {
          token: generateToken(user.id),
       });
    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Server error' });
+      console.error('Registration error:', error);
+      res.status(500).json({ message: 'Failed to register user. Please try again later.' });
    }
 };
 
@@ -53,24 +69,35 @@ const loginUser = async (req, res) => {
    const { email, password } = req.body;
 
    try {
+      // Validate required fields
+      if (!email || !password) {
+         return res.status(400).json({ message: 'Please provide email and password' });
+      }
+
       const result = await db.query('SELECT * FROM users WHERE email = $1', [email]);
       const user = result.rows[0];
 
-      if (user && (await bcrypt.compare(password, user.password))) {
-         res.json({
-            _id: user.id,
-            name: user.name,
-            email: user.email,
-            city: user.city,
-            profilePicture: user.profile_picture,
-            token: generateToken(user.id),
-         });
-      } else {
-         res.status(401).json({ message: 'Invalid email or password' });
+      if (!user) {
+         return res.status(401).json({ message: 'Invalid email or password' });
       }
+
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+
+      if (!isPasswordValid) {
+         return res.status(401).json({ message: 'Invalid email or password' });
+      }
+
+      res.json({
+         _id: user.id,
+         name: user.name,
+         email: user.email,
+         city: user.city,
+         profilePicture: user.profile_picture,
+         token: generateToken(user.id),
+      });
    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Server error' });
+      console.error('Login error:', error);
+      res.status(500).json({ message: 'Failed to login. Please try again later.' });
    }
 };
 
@@ -79,28 +106,32 @@ const loginUser = async (req, res) => {
 // @access  Private
 const getUserProfile = async (req, res) => {
    try {
+      if (!req.user || !req.user.id) {
+         return res.status(401).json({ message: 'Not authorized' });
+      }
+
       const result = await db.query('SELECT * FROM users WHERE id = $1', [req.user.id]);
       const user = result.rows[0];
 
-      if (user) {
-         res.json({
-            _id: user.id,
-            name: user.name,
-            email: user.email,
-            university: user.university,
-            city: user.city,
-            country: user.country,
-            budgetRange: user.budget_range,
-            interests: user.interests,
-            bio: user.bio,
-            profilePicture: user.profile_picture,
-         });
-      } else {
-         res.status(404).json({ message: 'User not found' });
+      if (!user) {
+         return res.status(404).json({ message: 'User not found' });
       }
+
+      res.json({
+         _id: user.id,
+         name: user.name,
+         email: user.email,
+         university: user.university,
+         city: user.city,
+         country: user.country,
+         budgetRange: user.budget_range,
+         interests: user.interests,
+         bio: user.bio,
+         profilePicture: user.profile_picture,
+      });
    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Server error' });
+      console.error('Get profile error:', error);
+      res.status(500).json({ message: 'Failed to fetch profile. Please try again later.' });
    }
 };
 
@@ -111,49 +142,72 @@ const updateUserProfile = async (req, res) => {
    const { name, email, university, city, country, budgetRange, interests, bio, password } = req.body;
 
    try {
+      if (!req.user || !req.user.id) {
+         return res.status(401).json({ message: 'Not authorized' });
+      }
+
       const result = await db.query('SELECT * FROM users WHERE id = $1', [req.user.id]);
       const user = result.rows[0];
 
-      if (user) {
-         const updatedName = name || user.name;
-         const updatedEmail = email || user.email;
-         const updatedUniversity = university || user.university;
-         const updatedCity = city || user.city;
-         const updatedCountry = country || user.country;
-         const updatedBudgetRange = budgetRange || user.budget_range;
-         const updatedInterests = interests || user.interests;
-         const updatedBio = bio || user.bio;
+      if (!user) {
+         return res.status(404).json({ message: 'User not found' });
+      }
 
-         let updatedPassword = user.password;
-         if (password) {
-            const salt = await bcrypt.genSalt(10);
-            updatedPassword = await bcrypt.hash(password, salt);
+      // Validate email format if provided
+      if (email) {
+         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+         if (!emailRegex.test(email)) {
+            return res.status(400).json({ message: 'Please provide a valid email address' });
          }
 
-         const updatedResult = await db.query(
-            `UPDATE users SET name = $1, email = $2, university = $3, city = $4, country = $5, 
-             budget_range = $6, interests = $7, bio = $8, password = $9, updated_at = NOW() 
-             WHERE id = $10 RETURNING *`,
-            [updatedName, updatedEmail, updatedUniversity, updatedCity, updatedCountry,
-               updatedBudgetRange, updatedInterests, updatedBio, updatedPassword, req.user.id]
-         );
-
-         const updatedUser = updatedResult.rows[0];
-
-         res.json({
-            _id: updatedUser.id,
-            name: updatedUser.name,
-            email: updatedUser.email,
-            city: updatedUser.city,
-            profilePicture: updatedUser.profile_picture,
-            token: generateToken(updatedUser.id),
-         });
-      } else {
-         res.status(404).json({ message: 'User not found' });
+         // Check if email is already taken by another user
+         const emailCheck = await db.query('SELECT * FROM users WHERE email = $1 AND id != $2', [email, req.user.id]);
+         if (emailCheck.rows.length > 0) {
+            return res.status(400).json({ message: 'Email is already in use' });
+         }
       }
+
+      // Validate password length if provided
+      if (password && password.length < 6) {
+         return res.status(400).json({ message: 'Password must be at least 6 characters long' });
+      }
+
+      const updatedName = name || user.name;
+      const updatedEmail = email || user.email;
+      const updatedUniversity = university !== undefined ? university : user.university;
+      const updatedCity = city || user.city;
+      const updatedCountry = country !== undefined ? country : user.country;
+      const updatedBudgetRange = budgetRange !== undefined ? budgetRange : user.budget_range;
+      const updatedInterests = interests !== undefined ? interests : user.interests;
+      const updatedBio = bio !== undefined ? bio : user.bio;
+
+      let updatedPassword = user.password;
+      if (password) {
+         const salt = await bcrypt.genSalt(10);
+         updatedPassword = await bcrypt.hash(password, salt);
+      }
+
+      const updatedResult = await db.query(
+         `UPDATE users SET name = $1, email = $2, university = $3, city = $4, country = $5, 
+          budget_range = $6, interests = $7, bio = $8, password = $9, updated_at = NOW() 
+          WHERE id = $10 RETURNING *`,
+         [updatedName, updatedEmail, updatedUniversity, updatedCity, updatedCountry,
+            updatedBudgetRange, updatedInterests, updatedBio, updatedPassword, req.user.id]
+      );
+
+      const updatedUser = updatedResult.rows[0];
+
+      res.json({
+         _id: updatedUser.id,
+         name: updatedUser.name,
+         email: updatedUser.email,
+         city: updatedUser.city,
+         profilePicture: updatedUser.profile_picture,
+         token: generateToken(updatedUser.id),
+      });
    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Server error' });
+      console.error('Update profile error:', error);
+      res.status(500).json({ message: 'Failed to update profile. Please try again later.' });
    }
 };
 
@@ -162,26 +216,36 @@ const updateUserProfile = async (req, res) => {
 // @access  Private
 const getMatches = async (req, res) => {
    try {
+      if (!req.user || !req.user.id) {
+         return res.status(401).json({ message: 'Not authorized' });
+      }
+
       const currentUserResult = await db.query('SELECT * FROM users WHERE id = $1', [req.user.id]);
       const currentUser = currentUserResult.rows[0];
 
-      if (!currentUser) return res.status(404).json({ message: 'User not found' });
+      if (!currentUser) {
+         return res.status(404).json({ message: 'User not found' });
+      }
 
       const allUsersResult = await db.query('SELECT * FROM users WHERE id != $1', [currentUser.id]);
       const allUsers = allUsersResult.rows;
 
+      if (allUsers.length === 0) {
+         return res.json([]);
+      }
+
       const scoredUsers = allUsers.map(user => {
          let score = 0;
 
-         if (user.city && currentUser.city && user.city.toLowerCase() === currentUser.city.toLowerCase()) {
+         if (user.city == currentUser.city && user.city.toLowerCase() === currentUser.city.toLowerCase()) {
             score += 3;
          }
 
-         if (user.university && currentUser.university && user.university.toLowerCase() === currentUser.university.toLowerCase()) {
+         if (user.university == currentUser.university && user.university.toLowerCase() === currentUser.university.toLowerCase()) {
             score += 2;
          }
 
-         if (user.budget_range && currentUser.budget_range && user.budget_range === currentUser.budget_range) {
+         if (user.budget_range == currentUser.budget_range && user.budget_range === currentUser.budget_range) {
             score += 2;
          }
 
@@ -203,8 +267,8 @@ const getMatches = async (req, res) => {
 
       res.json(scoredUsers.slice(0, 5));
    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Server error' });
+      console.error('Get matches error:', error);
+      res.status(500).json({ message: 'Failed to fetch matches. Please try again later.' });
    }
 };
 

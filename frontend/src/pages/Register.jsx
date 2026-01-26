@@ -14,7 +14,7 @@ const Register = () => {
       budgetRange: '',
       interests: '', // comma separated local state
    });
-   const [error, setError] = useState('');
+   const [loading, setLoading] = useState(false);
    const { register } = useAuth();
    const navigate = useNavigate();
 
@@ -24,15 +24,27 @@ const Register = () => {
 
    const handleSubmit = async (e) => {
       e.preventDefault();
+
+      // Validate required fields
+      if (!formData.name.trim() || !formData.email.trim() || !formData.password.trim() || !formData.city.trim()) {
+         return;
+      }
+
+      setLoading(true);
       try {
          const dataToSubmit = {
             ...formData,
-            interests: formData.interests.split(',').map(i => i.trim()),
+            name: formData.name.trim(),
+            email: formData.email.trim(),
+            city: formData.city.trim(),
+            interests: formData.interests ? formData.interests.split(',').map(i => i.trim()).filter(Boolean) : [],
          };
          await register(dataToSubmit);
          navigate('/');
       } catch (err) {
-         setError(err.response?.data?.message || 'Registration failed');
+         // Error is handled by AuthContext with toast
+      } finally {
+         setLoading(false);
       }
    };
 
@@ -48,11 +60,7 @@ const Register = () => {
                <p className="text-slate-500">Connect with fellow exchange students.</p>
             </div>
 
-            {error && (
-               <div className="bg-red-50 text-red-500 p-3 rounded-lg mb-4 text-sm text-center">
-                  {error}
-               </div>
-            )}
+
 
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                <div className="col-span-2 md:col-span-1">
@@ -93,8 +101,19 @@ const Register = () => {
                </div>
 
                <div className="col-span-2 mt-4">
-                  <button type="submit" className="w-full btn-primary py-3">
-                     Create Account
+                  <button
+                     type="submit"
+                     disabled={loading || !formData.name.trim() || !formData.email.trim() || !formData.password.trim() || !formData.city.trim()}
+                     className="w-full btn-primary py-3 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                     {loading ? (
+                        <>
+                           <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+                           Creating Account...
+                        </>
+                     ) : (
+                        'Create Account'
+                     )}
                   </button>
                </div>
             </form>

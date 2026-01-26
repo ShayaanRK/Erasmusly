@@ -8,17 +8,26 @@ import { Button } from '@/components/ui/button';
 const Login = () => {
    const [email, setEmail] = useState('');
    const [password, setPassword] = useState('');
-   const [error, setError] = useState('');
+   const [loading, setLoading] = useState(false);
    const { login } = useAuth();
    const navigate = useNavigate();
 
    const handleSubmit = async (e) => {
       e.preventDefault();
+
+      // Validate inputs
+      if (!email.trim() || !password.trim()) {
+         return;
+      }
+
+      setLoading(true);
       try {
-         await login(email, password);
+         await login(email.trim(), password);
          navigate('/');
       } catch (err) {
-         setError(err.response?.data?.message || 'Login failed');
+         // Error is handled by AuthContext with toast
+      } finally {
+         setLoading(false);
       }
    };
 
@@ -76,15 +85,7 @@ const Login = () => {
                   <p className="text-slate-500 text-lg">Enter your credentials to access your student portal.</p>
                </div>
 
-               {error && (
-                  <motion.div
-                     initial={{ opacity: 0, scale: 0.95 }}
-                     animate={{ opacity: 1, scale: 1 }}
-                     className="bg-destructive/10 text-destructive p-4 rounded-2xl text-sm font-medium border border-destructive/20"
-                  >
-                     {error}
-                  </motion.div>
-               )}
+
 
                <Button
                   type="button"
@@ -130,8 +131,21 @@ const Login = () => {
                      />
                   </div>
 
-                  <Button type="submit" className="w-full py-7 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 group">
-                     Login to Dashboard <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
+                  <Button
+                     type="submit"
+                     disabled={loading || !email.trim() || !password.trim()}
+                     className="w-full py-7 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 group disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                     {loading ? (
+                        <>
+                           <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2" />
+                           Logging in...
+                        </>
+                     ) : (
+                        <>
+                           Login to Dashboard <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
+                        </>
+                     )}
                   </Button>
                </form>
 

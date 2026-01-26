@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import api from '../api';
+import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { MessageSquare, Star, Sparkles, MapPin } from 'lucide-react';
+import { MessageSquare, Star, Sparkles, MapPin, Loader2, Users } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -10,12 +11,21 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 
 const Roommates = () => {
    const [matches, setMatches] = useState([]);
+   const [loading, setLoading] = useState(true);
    const navigate = useNavigate();
 
    useEffect(() => {
       const fetchMatches = async () => {
-         const { data } = await api.get('/users/matches');
-         setMatches(data);
+         setLoading(true);
+         try {
+            const { data } = await api.get('/users/matches');
+            setMatches(data || []);
+         } catch (error) {
+            console.error('Failed to fetch matches', error);
+            toast.error(error.response?.data?.message || 'Failed to load matches');
+         } finally {
+            setLoading(false);
+         }
       };
       fetchMatches();
    }, []);
@@ -23,9 +33,11 @@ const Roommates = () => {
    const startChat = async (userId) => {
       try {
          const { data } = await api.post('/chat', { userId });
+         toast.success('Chat started!');
          navigate(`/chat?id=${data._id}`); // Pass chat ID to pre-select
       } catch (error) {
          console.error("Failed to start chat", error);
+         toast.error(error.response?.data?.message || 'Failed to start chat');
       }
    }
 
