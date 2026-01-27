@@ -1,6 +1,6 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, Home, MessageSquare, Heart, User, MapPin, Globe, Calendar } from 'lucide-react';
+import { LogOut, Home, MessageSquare, Heart, User, MapPin, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
@@ -18,9 +18,11 @@ const Navbar = () => {
    return (
       <header className="sticky top-6 z-50 w-full max-w-7xl mx-auto flex h-20 items-center justify-between px-6 premium-glass rounded-[2rem] mt-6 transition-all duration-500 hover:shadow-primary/5">
          <div className="flex items-center gap-3.5 group cursor-pointer" onClick={() => navigate('/')}>
-            <div className="vibrant-gradient rounded-2xl p-2.5 shadow-2xl shadow-primary/30 group-hover:rotate-[15deg] transition-all duration-500">
-               <Globe className="text-white h-6 w-6" />
-            </div>
+            <img
+               src="/erasmuslyLogo.jpg"
+               alt="Erasmusly Logo"
+               className="h-10 w-10 rounded-xl shadow-lg shadow-primary/20 group-hover:scale-105 transition-all duration-300 object-cover"
+            />
             <span className="text-2xl font-black tracking-tight text-vibrant">
                Erasmusly
             </span>
