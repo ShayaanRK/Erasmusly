@@ -9,3 +9,5 @@ backend/PRE_DEPLOYMENT_CHECKLIST.md
 backend/POSTMAN_API_TESTS.md
 backend/QUICK_API_REFERENCE.md
 backend/Erasmusly_Backend_Tests.postman_collection.json
+backend/CORS_FIX.md
+frontend/DEPLOYMENT_GUIDE.md
