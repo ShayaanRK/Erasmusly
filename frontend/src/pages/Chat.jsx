@@ -19,7 +19,7 @@ import {
 import { ChatMessageList } from "../components/ui/chat/chat-message-list";
 import { ChatInput } from "../components/ui/chat/chat-input";
 
-const ENDPOINT = 'http://localhost:5000';
+const ENDPOINT = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 var socket;
 
 const Chat = () => {
