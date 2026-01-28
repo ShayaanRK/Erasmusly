@@ -59,7 +59,7 @@ const getEvents = async (req, res) => {
          SELECT e.*, u.name as user_name 
          FROM events e
          JOIN users u ON e.user_id = u.id
-         WHERE e.event_date = NOW()
+         WHERE e.event_date >= NOW()
          ORDER BY e.event_date ASC
       `);
 

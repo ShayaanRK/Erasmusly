@@ -12,7 +12,7 @@ const protect = async (req, res, next) => {
          token = req.headers.authorization.split(' ')[1];
          const decoded = jwt.verify(token, process.env.JWT_SECRET || 'erasmuslyseqret');
 
-         const result = await db.query('SELECT id, email, name, city FROM users WHERE id = $1', [decoded.id]);
+         const result = await db.query('SELECT id, email, name, city, profile_picture FROM users WHERE id = $1', [decoded.id]);
          req.user = result.rows[0];
 
          if (!req.user) {

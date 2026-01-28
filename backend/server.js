@@ -13,8 +13,13 @@ const server = http.createServer(app);
 
 app.use(express.json());
 
+// Dynamic CORS for local dev and production
+const allowedOrigins = process.env.FRONTEND_URL
+   ? [process.env.FRONTEND_URL, "http://localhost:5173"]
+   : ["http://localhost:5173"];
+
 app.use(cors({
-   origin: "http://localhost:5173",
+   origin: allowedOrigins,
    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
    allowedHeaders: ["Content-Type", "Authorization"],
    credentials: true
@@ -22,7 +27,7 @@ app.use(cors({
 
 const io = new Server(server, {
    cors: {
-      origin: "http://localhost:5173",
+      origin: allowedOrigins,
       methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
       credentials: true
    }
@@ -87,6 +92,27 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 
-server.listen(PORT, () => {
-   console.log(`Server running on port ${PORT}`);
-});
+// Auto-seed database if SEED=true
+if (process.env.SEED === 'true') {
+   console.log('🌱 SEED mode enabled - seeding database...');
+   const seedDatabase = require('./scripts/seedDatabase');
+
+   seedDatabase()
+      .then(() => {
+         console.log('✅ Database seeded successfully! Starting server...');
+         startServer();
+      })
+      .catch((error) => {
+         console.error('❌ Failed to seed database:', error);
+         process.exit(1);
+      });
+} else {
+   startServer();
+}
+
+function startServer() {
+   server.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+   });
+}
+

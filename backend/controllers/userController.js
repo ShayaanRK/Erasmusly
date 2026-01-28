@@ -237,15 +237,15 @@ const getMatches = async (req, res) => {
       const scoredUsers = allUsers.map(user => {
          let score = 0;
 
-         if (user.city == currentUser.city && user.city.toLowerCase() === currentUser.city.toLowerCase()) {
+         if (user.city && currentUser.city && user.city.toLowerCase() === currentUser.city.toLowerCase()) {
             score += 3;
          }
 
-         if (user.university == currentUser.university && user.university.toLowerCase() === currentUser.university.toLowerCase()) {
+         if (user.university && currentUser.university && user.university.toLowerCase() === currentUser.university.toLowerCase()) {
             score += 2;
          }
 
-         if (user.budget_range == currentUser.budget_range && user.budget_range === currentUser.budget_range) {
+         if (user.budget_range && currentUser.budget_range && user.budget_range === currentUser.budget_range) {
             score += 2;
          }
 

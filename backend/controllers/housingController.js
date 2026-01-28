@@ -89,7 +89,7 @@ const getPosts = async (req, res) => {
       if (maxPrice) {
          const parsedMax = parseFloat(maxPrice);
          if (!isNaN(parsedMax) && parsedMax >= 0) {
-            queryText += ` AND hp.price === $${paramIndex}`;
+            queryText += ` AND hp.price <= $${paramIndex}`;
             params.push(parsedMax);
             paramIndex++;
          }

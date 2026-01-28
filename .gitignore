@@ -3,3 +3,6 @@ node_modules
 dist
 .DS_Store
 coverage
+backend/AUDIT_REPORT.md
+backend/AUDIT_SUMMARY.md
+backend/PRE_DEPLOYMENT_CHECKLIST.md

@@ -162,15 +162,17 @@ const events = [
    },
 ];
 
-const seed = async () => {
+const seedDatabase = async () => {
    try {
-      console.log('Connecting to database...');
+      console.log('🔌 Connecting to database...');
       await pool.query('SELECT NOW()'); // Test connection
+      console.log('✅ Database connected successfully!');
 
-      console.log('Cleaning database...');
+      console.log('🧹 Cleaning database...');
       await pool.query('TRUNCATE TABLE messages, chat_room_participants, chat_rooms, events, housing_posts, users RESTART IDENTITY CASCADE');
+      console.log('✅ Database cleaned!');
 
-      console.log('Seeding Users...');
+      console.log('👥 Seeding Users...');
       const usersData = await generateUsers();
       const createdUsers = [];
 
@@ -184,9 +186,8 @@ const seed = async () => {
       }
       console.log(`✅ Seeded ${createdUsers.length} users.`);
 
-      console.log('Seeding Housing Posts...');
+      console.log('🏠 Seeding Housing Posts...');
       for (const [index, post] of housingPosts.entries()) {
-         // Assign posts to the first separate users to keep it simple, or random
          const owner = createdUsers[index % createdUsers.length];
          await pool.query(
             `INSERT INTO housing_posts (title, description, price, city, address, images, user_id) 
@@ -196,7 +197,7 @@ const seed = async () => {
       }
       console.log(`✅ Seeded ${housingPosts.length} housing posts.`);
 
-      console.log('Seeding Events...');
+      console.log('🎉 Seeding Events...');
       for (const [index, event] of events.entries()) {
          const organizer = createdUsers[index % createdUsers.length];
          await pool.query(
@@ -207,12 +208,24 @@ const seed = async () => {
       }
       console.log(`✅ Seeded ${events.length} events.`);
 
-      console.log('✅ Seeding completed successfully!');
-      process.exit(0);
+      console.log('\n🎊 ✅ SEEDING COMPLETED SUCCESSFULLY! 🎊\n');
+
+      // Close the pool
+      await pool.end();
+      return true;
    } catch (error) {
-      console.error('❌ Seeding failed:', error);
-      process.exit(1);
+      console.error('❌ SEEDING FAILED:', error);
+      await pool.end();
+      throw error;
    }
 };
 
-seed();
+// Export for use in server.js
+module.exports = seedDatabase;
+
+// Run directly if called as a script
+if (require.main === module) {
+   seedDatabase()
+      .then(() => process.exit(0))
+      .catch(() => process.exit(1));
+}
