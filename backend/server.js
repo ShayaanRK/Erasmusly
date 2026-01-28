@@ -94,7 +94,7 @@ const PORT = process.env.PORT || 5000;
 
 // Auto-seed database if SEED=true
 if (process.env.SEED === 'true') {
-   console.log('🌱 SEED mode enabled - seeding database...');
+   console.log('🌱 SEED=true detected. Starting mandatory database seeding...');
    const seedDatabase = require('./scripts/seedDatabase');
 
    seedDatabase()

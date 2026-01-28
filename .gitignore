@@ -6,3 +6,6 @@ coverage
 backend/AUDIT_REPORT.md
 backend/AUDIT_SUMMARY.md
 backend/PRE_DEPLOYMENT_CHECKLIST.md
+backend/POSTMAN_API_TESTS.md
+backend/QUICK_API_REFERENCE.md
+backend/Erasmusly_Backend_Tests.postman_collection.json

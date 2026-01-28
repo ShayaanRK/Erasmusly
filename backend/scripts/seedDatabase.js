@@ -4,19 +4,24 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-// Use DATABASE_URL for production (Render/Supabase), fallback to individual params for local
-const pool = process.env.DATABASE_URL
-   ? new Pool({
-      connectionString: process.env.DATABASE_URL,
-      ssl: { rejectUnauthorized: false }
-   })
-   : new Pool({
-      user: process.env.DB_USER || 'postgres',
-      host: process.env.DB_HOST || 'localhost',
-      database: process.env.DB_NAME || 'erasmusly',
-      password: process.env.DB_PASSWORD || 'postgres',
-      port: process.env.DB_PORT || 5432,
-   });
+// STRICTLY enforce Supabase connection for Seeding
+if (!process.env.DATABASE_URL) {
+   console.error('❌ FATAL ERROR: DATABASE_URL is missing for seeding.');
+   process.exit(1);
+}
+
+const pool = new Pool({
+   connectionString: process.env.DATABASE_URL,
+   ssl: {
+      rejectUnauthorized: false,
+   },
+   connectionTimeoutMillis: 30000,
+});
+
+console.log('🛠️  Database Config:');
+console.log(`   URL: ${process.env.DATABASE_URL ? process.env.DATABASE_URL.replace(/:[^:@]*@/, ':****@') : 'UNDEFINED'}`);
+console.log('   SSL: true');
+console.log('   Timeout: 20000ms');
 
 const generateUsers = async () => {
    const salt = await bcrypt.genSalt(10);

@@ -4,26 +4,32 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 
-// Use DATABASE_URL for production (Render/Supabase), fallback to individual params for local
-const pool = process.env.DATABASE_URL
-   ? new Pool({
-      connectionString: process.env.DATABASE_URL,
-      ssl: { rejectUnauthorized: false }
-   })
-   : new Pool({
-      user: process.env.DB_USER || 'postgres',
-      host: process.env.DB_HOST || 'localhost',
-      database: process.env.DB_NAME || 'erasmusly',
-      password: process.env.DB_PASSWORD || 'postgres',
-      port: process.env.DB_PORT || 5432,
-   });
+// STRICTLY enforce Supabase connection
+if (!process.env.DATABASE_URL) {
+   console.error('❌ FATAL ERROR: DATABASE_URL is missing in .env');
+   console.error('❌ The application is configured to ONLY use the seeded Supabase database.');
+   process.exit(1);
+}
 
-// Test connection
-pool.query('SELECT NOW()', (err, res) => {
+console.log('🔌 Initializing Database Connection Pool...');
+console.log(`   Target: ${process.env.DATABASE_URL.includes('supabase') ? '✅ Supabase' : '⚠️ Unknown DB'}`);
+
+const pool = new Pool({
+   connectionString: process.env.DATABASE_URL,
+   ssl: { rejectUnauthorized: false }, // Required for Supabase
+   connectionTimeoutMillis: 10000,
+   idleTimeoutMillis: 30000,
+});
+
+// Test connection on startup
+pool.query('SELECT NOW() as now, current_database() as db_name', (err, res) => {
    if (err) {
-      console.error('Error connecting to the database', err.stack);
+      console.error('❌ DATABASE CONNECTION FAILED:', err.message);
+      // We don't exit here to allow retry logic if needed, but this is critical
    } else {
-      console.log('PostgreSQL Connected:', res.rows[0].now);
+      console.log('✅ CONNECTED TO SUPABASE DATABASE');
+      console.log('   Database:', res.rows[0].db_name);
+      console.log('   Time:', res.rows[0].now);
    }
 });
 
